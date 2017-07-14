@@ -1,7 +1,7 @@
 <?php
 
 /**
- * {@inheritdoc}
+ * Class SugarCrmClient
  */
 class SugarCrmClient {
 
