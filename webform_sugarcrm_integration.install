@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Webform SugarCRM Integration module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function webform_sugarcrm_integration_uninstall() {
+  variable_del('webform_sugarcrm_restful_url');
+  variable_del('webform_sugarcrm_service_user');
+  variable_del('webform_sugarcrm_service_password');
+}
