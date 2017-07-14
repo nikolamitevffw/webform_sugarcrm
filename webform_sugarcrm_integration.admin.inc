@@ -12,8 +12,8 @@
 function webform_sugarcrm_integration_sugarcrm_config() {
   $form = array();
 
-  $restful_url = variable_get('sugarcrm_restful_url', '');
-  $user = variable_get('sugarcrm_service_user', '');
+  $restful_url = variable_get('webform_sugarcrm_restful_url', '');
+  $user = variable_get('webform_sugarcrm_service_user', '');
 
   $form['sugarcrm_restful_url'] = array(
     '#title' => t('Restful URL'),
