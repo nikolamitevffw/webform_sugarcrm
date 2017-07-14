@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Administrative operations.
@@ -7,7 +8,7 @@
 /**
  * SugarCRM integration configuration form.
  *
- * Path: admin/config/services/sugarcrm
+ * Path: admin/config/services/sugarcrm.
  */
 function webform_sugarcrm_integration_sugarcrm_config() {
   $form = array();
@@ -58,7 +59,6 @@ function webform_sugarcrm_integration_sugarcrm_config_validate($form, &$form_sta
   $user = $form_state['values']['sugarcrm_service_user'];
   $password = $form_state['values']['sugarcrm_service_password'];
 
-
   $params = array(
     'url' => $url,
     'user' => $user,
@@ -82,9 +82,6 @@ function webform_sugarcrm_integration_sugarcrm_config_validate($form, &$form_sta
 
 /**
  * Submit handler for SugarCRM integration form.
- *
- * @param $form
- * @param $form_state
  */
 function webform_sugarcrm_integration_sugarcrm_config_submit($form, &$form_state) {
   if (!empty($form_state['values']['sugarcrm_restful_url'])) {
@@ -204,7 +201,7 @@ function webform_sugarcrm_integration_mapping_get_sugarcrm_module_fields($module
     $sugarcrm_mudule_fields = $sugarcrm_client->getModuleFields($module);
 
     // Build module fields list.
-    if (!empty($sugarcrm_mudule_fields)){
+    if (!empty($sugarcrm_mudule_fields)) {
       foreach ($sugarcrm_mudule_fields->module_fields as $field) {
         $sugarcrm_mudule_field_options[$field->name] = $field->required ? $field->name . ' *' : $field->name;
       }

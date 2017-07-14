@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Webform SugarCRM Integration module.
+ */
+
+/**
  * Implements hook_menu().
  */
 function webform_sugarcrm_integration_menu() {
@@ -98,8 +103,10 @@ function webform_sugarcrm_integration_form_alter(&$form, &$form_state, $form_id)
     && ($form_id === 'webform_client_form_' . $form['#node']->nid)
     && ($form['#node']->type === 'webform')){
     // Add SugarCRM submit handler.
-    // It is important to execute this handler before default webform submit handlers,
-    // so the form form components will be in more understandable keys instead of cids.
+    // It is important to execute this handler before default
+    // webform submit handlers,
+    // so the form components will be with more
+    // understandable keys instead of cids.
     array_unshift($form['#submit'], 'webform_sugarcrm_integration_submit_handler');
   }
 }
@@ -107,9 +114,8 @@ function webform_sugarcrm_integration_form_alter(&$form, &$form_state, $form_id)
 /**
  * Submit handler for webforms which need to make SugarCRM record.
  *
- * @param $form
- * @param $form_state
  * @return null|void
+ *  Function webform_sugarcrm_integration_submit handler.
  */
 function webform_sugarcrm_integration_submit_handler($form, &$form_state) {
   if (isset($form['#node']) && isset($form['#node']->nid)
@@ -136,12 +142,12 @@ function webform_sugarcrm_integration_submit_handler($form, &$form_state) {
 }
 
 /**
- * Helper function for mapping submitted field data to SugarCRM fields
+ * Helper function for mapping submitted field data to SugarCRM fields.
  *
  * @param $submitted
  *  Submitted webform fields and values.
  * @param $fields_mapping
- *  Mapping array
+ *  Mapping array.
  *
  * @return array
  *  Mapped array in format suitable for SugarCRM record.

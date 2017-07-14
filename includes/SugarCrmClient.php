@@ -1,6 +1,8 @@
 <?php
 
-
+/**
+ * {@inheritdoc}
+ */
 class SugarCrmClient {
 
   protected $session;
@@ -8,6 +10,9 @@ class SugarCrmClient {
   protected $user;
   protected $password;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct($params) {
     if (isset($params['url'])) {
       $this->url = $params['url'];
@@ -30,7 +35,8 @@ class SugarCrmClient {
       return NULL;
     }
 
-    // Open a new connection to the service. This call will also save the session.
+    // Open a new connection to the service.
+    // This call will also save the session.
     $this->init();
   }
 
@@ -61,6 +67,7 @@ class SugarCrmClient {
    * Getter for $session.
    *
    * @return object
+   *  Public function getSession object.
    */
   public function getSession() {
     return $this->session;
@@ -147,6 +154,9 @@ class SugarCrmClient {
     return $result;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setSugarCrmRecord($module, $field_values) {
     $parameters = array(
       'session' => $this->session->id,
@@ -158,4 +168,5 @@ class SugarCrmClient {
 
     return $result;
   }
+
 }
