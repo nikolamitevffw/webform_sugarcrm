@@ -1,0 +1,9 @@
+name = Webform SugarCRM Integration
+description = "Module provides integration for webform submission with SugarCRM"
+package = Webform
+core = 7.x
+
+dependencies[] = webform
+dependencies[] = webform_uuid
+
+files[] = includes/SugarCrmClient.php
