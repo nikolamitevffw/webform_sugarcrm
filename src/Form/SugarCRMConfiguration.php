@@ -41,7 +41,6 @@ class SugarCRMConfiguration extends FormBase{
     $form['sugarcrm_service_password'] = array(
       '#title' => t('Service password'),
       '#type' => 'password',
-      '#description' => t('If you want to keep your old password, leave this field blank.'),
     );
 
     $form['submit'] = array(
@@ -64,9 +63,6 @@ class SugarCRMConfiguration extends FormBase{
     if (!empty($pass)) {
       $pass = md5($form_state->getValue('sugarcrm_service_password'));
     }
-    else {
-      $pass = $config->get('password');
-    }
 
     $config->set('url', $url);
     $config->set('user', $user);
@@ -81,11 +77,10 @@ class SugarCRMConfiguration extends FormBase{
 
       drupal_set_message(t('A connection to the SugarCRM instance could be established.'));
     }
-    catch (\Exception $exc) {
-      \Drupal::logger('webform_sugarcrm')->error($exc->getMessage());
-      drupal_set_message(t("It seems like your credentials isn't valid, or the SugarCRM webservice instance is down."), 'error');
+    catch (\Exception $e) {
+      \Drupal::logger('webform_sugarcrm')->error($e->getMessage());
+      drupal_set_message($e->getMessage(), 'error');
     }
-
   }
 
 }
