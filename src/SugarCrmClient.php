@@ -2,6 +2,8 @@
 
 namespace Drupal\webform_sugarcrm;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+
 /**
  * Class SugarCrmClient
  */
@@ -15,47 +17,32 @@ class SugarCrmClient {
   /**
    * {@inheritdoc}
    */
-  public function __construct($params) {
-    if (isset($params['url'])) {
-      $this->url = $params['url'];
-    }
-    else {
-      return NULL;
-    }
+  public function __construct(ConfigFactoryInterface $configFactory) {
+    $config = $configFactory->get('webform_sugarcrm.sugarcrm_configuration');
 
-    if (isset($params['user'])) {
-      $this->user = $params['user'];
-    }
-    else {
-      return NULL;
-    }
-
-    if (isset($params['password'])) {
-      $this->password = $params['password'];
-    }
-    else {
-      return NULL;
-    }
-
-    // Open a new connection to the service.
-    // This call will also save the session.
-    $this->init();
+    $this->url = $config->get('url');
+    $this->user = $config->get('user');
+    $this->password = $config->get('password');
   }
 
   /**
-   * Initialize a new connection by getteing a new session.
+   * Initialize Sugar CRM session.
+   *
+   * @throws \Exception
+   *   Throws un exception in case of invalid login.
    */
-  protected function init() {
-    $login_parameters = array(
-      "user_auth" => array(
+  public function login() {
+    $params = [
+      "user_auth" => [
         "user_name" => $this->user,
         "password" => $this->password,
         "version" => "1",
-      ),
-      "name_value_list" => array(),
-    );
+      ],
+      "name_value_list" => [],
+    ];
 
-    $this->session = $this->call("login", $login_parameters);
+    // Initialize Sugar CRM connection.
+    $this->session = $this->call("login", $params);
 
     // Error handling.
     if (!isset($this->session->id)) {
@@ -64,7 +51,6 @@ class SugarCrmClient {
       }
     }
   }
-
   /**
    * Getter for $session.
    *
@@ -101,12 +87,12 @@ class SugarCrmClient {
 
     $json_encoded_data = json_encode($parameters);
 
-    $post = array(
+    $post = [
       "method" => $method,
       "input_type" => "JSON",
       "response_type" => "JSON",
       "rest_data" => $json_encoded_data,
-    );
+    ];
 
     curl_setopt($curl_request, CURLOPT_POSTFIELDS, $post);
     $result = curl_exec($curl_request);
@@ -133,9 +119,9 @@ class SugarCrmClient {
    * Fetch a list of all available modules.
    */
   public function getModules() {
-    $parameters = array(
+    $parameters = [
       'session' => $this->session->id,
-    );
+    ];
 
     $result = $this->call('get_available_modules', $parameters);
 
@@ -146,10 +132,10 @@ class SugarCrmClient {
    * Fetch all fields data belonging to a module.
    */
   public function getModuleFields($module_name) {
-    $parameters = array(
+    $parameters = [
       'session' => $this->session->id,
       'module_name' => $module_name,
-    );
+    ];
 
     $result = $this->call('get_module_fields', $parameters);
 
@@ -167,11 +153,11 @@ class SugarCrmClient {
    * @return mixed
    */
   public function setSugarCrmRecord($module, $field_values) {
-    $parameters = array(
+    $parameters = [
       'session' => $this->session->id,
       'module_name' => $module,
       'name_value_list' => $field_values,
-    );
+    ];
 
     $result = $this->call('set_entry', $parameters);
 
