@@ -9,13 +9,39 @@ use Drupal\Core\Config\ConfigFactoryInterface;
  */
 class SugarCrmManager {
 
+  /**
+   * Stores Sugar CRM session.
+   *
+   * @var mixed
+   */
   protected $session;
+
+  /**
+   * Sugar CRM RESTful URL.
+   *
+   * @var string|null
+   */
   protected $url;
+
+  /**
+   * Sugar CRM user name.
+   *
+   * @var string|null
+   */
   protected $user;
+
+  /**
+   * Sugar CRM user password.
+   *
+   * @var string|null
+   */
   protected $password;
 
   /**
-   * {@inheritdoc}
+   * Construct Sugar CRM manager.
+   *
+   * @param ConfigFactoryInterface $configFactory
+   *   Config factory object.
    */
   public function __construct(ConfigFactoryInterface $configFactory) {
     $config = $configFactory->get('webform_sugarcrm.sugarcrm_configuration');
@@ -54,17 +80,26 @@ class SugarCrmManager {
     }
   }
   /**
-   * Getter for $session.
+   * Get Sugar CRM session.
    *
    * @return object
-   *  Public function getSession object.
+   *  Returns Sugar CRM session object.
    */
   public function getSession() {
     return $this->session;
   }
 
   /**
-   * Call the service.
+   * Helper method to execute CRM requests.
+   *
+   * @param $method
+   *   Sugar CRM method to execute.
+   *
+   * @param $parameters
+   *   Sugar CRM params.
+   *
+   * @return mixed
+   *   Returns Sugar CRM response.
    */
   protected function call($method, $parameters) {
     // If the communication has failed once, don't try to establish a new
@@ -124,6 +159,9 @@ class SugarCrmManager {
 
   /**
    * Fetch a list of all available modules.
+   *
+   * @return mixed
+   *   Returns list of availabe modules.
    */
   public function getModules() {
     $parameters = [
@@ -137,11 +175,17 @@ class SugarCrmManager {
 
   /**
    * Fetch all fields data belonging to a module.
+   *
+   * @param $moduleName
+   *   Related module.
+   *
+   * @return mixed
+   *   Returns list of fields for a given CRM module.
    */
-  public function getModuleFields($module_name) {
+  public function getModuleFields($moduleName) {
     $parameters = [
       'session' => $this->session->id,
-      'module_name' => $module_name,
+      'module_name' => $moduleName,
     ];
 
     $result = $this->call('get_module_fields', $parameters);
@@ -153,17 +197,19 @@ class SugarCrmManager {
    * Sets record in SugarCRM
    *
    * @param $module
-   *  SugerCRM module.
+   *  Sugar CRM module.
    *
-   * @param $field_values
+   * @param $values
+   *   Field values.
    *
    * @return mixed
+   *   Returns CRM response.
    */
-  public function setSugarCrmRecord($module, $field_values) {
+  public function setSugarCrmRecord($module, $values) {
     $parameters = [
       'session' => $this->session->id,
       'module_name' => $module,
-      'name_value_list' => $field_values,
+      'name_value_list' => $values,
     ];
 
     $result = $this->call('set_entry', $parameters);
