@@ -45,10 +45,12 @@ class SugarCrmClient {
     $this->session = $this->call("login", $params);
 
     // Error handling.
-    if (!isset($this->session->id)) {
-      if ($this->session->name == 'Invalid Login') {
-        throw new \Exception('Invalid login');
-      }
+    if (empty($this->session)) {
+      throw new \Exception(t('Invalid login'));
+    }
+    else if (!isset($this->session->id) && $this->session->name === 'Invalid Login') {
+      $message = !empty($this->session->description) ? $this->session->description : $this->session->name;
+      throw new \Exception($message);
     }
   }
   /**
@@ -70,7 +72,7 @@ class SugarCrmClient {
     $sugar_comm_failure = &drupal_static(__FUNCTION__ . '_failure');
 
     if ($sugar_comm_failure) {
-      return;
+      return FALSE;
     }
 
     ob_start();
@@ -99,20 +101,25 @@ class SugarCrmClient {
 
     curl_close($curl_request);
 
-    $result = explode("\r\n\r\n", $result, 2);
-
-    if (strstr($result[0], '200 OK')) {
-      $response = json_decode($result[1]);
+    if (empty($result)) {
+      return FALSE;
     }
     else {
-      drupal_set_message(t('An error has occurred whilst retrieving data from the system. Please try again later.'), 'error');
-      \Drupal::logger('bcms_sugarcrm')->error('An error occurred while communicating with SugarCRM. The error was: @error', array('@error' => $result[0] . "\r\n\r\n" . $result[1]));
-      $sugar_comm_failure = TRUE;
-    }
-    ob_end_flush();
+      $result = explode("\r\n\r\n", $result, 2);
+      $response = FALSE;
 
-    // Override converts special HTML entities back to characters.
-    return $response;
+      if (strstr($result[0], '200 OK')) {
+        $response = json_decode($result[1]);
+      }
+      else {
+        drupal_set_message(t('An error has occurred whilst retrieving data from the system. Please try again later.'), 'error');
+        \Drupal::logger('bcms_sugarcrm')->error('An error occurred while communicating with SugarCRM. The error was: @error', array('@error' => $result[0] . "\r\n\r\n" . $result[1]));
+        $sugar_comm_failure = TRUE;
+      }
+      ob_end_flush();
+
+      return $response;
+    }
   }
 
   /**
