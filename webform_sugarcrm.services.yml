@@ -1,4 +1,4 @@
 services:
-  webform_sugarcrm.sugarcrm_client:
-    class: Drupal\webform_sugarcrm\SugarCrmClient
+  webform_sugarcrm.sugarcrm_manager:
+    class: Drupal\webform_sugarcrm\SugarCrmManager
     arguments: ['@config.factory']
