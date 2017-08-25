@@ -23,7 +23,7 @@ function webform_sugarcrm_form_alter(&$form, &$form_state, $form_id) {
  *  Function webform_sugarcrm_submit_handler.
  */
 function webform_sugarcrm_submit_handler($form, &$form_state) {
-  if (isset($form['#webform_id']) && $form['form_id'] === 'webform_submission_' . $form['#webform_id'] . '_form') {
+  if (isset($form['#webform_id']) && $form['#form_id'] === 'webform_submission_' . $form['#webform_id'] . '_form') {
     // Get fields mapping.
     $configuration = Drupal::configFactory()->get('webform_sugarcrm.webform_field_mapping.' . $form['#webform_id']);
     $fields_mapping = $configuration->getRawData();
@@ -36,8 +36,16 @@ function webform_sugarcrm_submit_handler($form, &$form_state) {
 
     $sugarcrm = Drupal::service('webform_sugarcrm.sugarcrm_manager');
     if (!empty($sugarcrm)) {
-      foreach ($mapped_fields as $module => $fields) {
-        $sugarcrm->setSugarCrmRecord($module, $fields);
+      try {
+        $sugarcrm->login();
+
+        foreach ($mapped_fields as $module => $fields) {
+          $sugarcrm->setSugarCrmRecord($module, $fields);
+        }
+      }
+      catch (\Exception $e) {
+        \Drupal::logger('webform_sugarcrm')->error($e->getMessage());
+        drupal_set_message($e->getMessage(), 'error');
       }
     }
   }
