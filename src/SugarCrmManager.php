@@ -5,9 +5,9 @@ namespace Drupal\webform_sugarcrm;
 use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
- * Class SugarCrmClient
+ * Class SugarCrmManager
  */
-class SugarCrmClient {
+class SugarCrmManager {
 
   protected $session;
   protected $url;
