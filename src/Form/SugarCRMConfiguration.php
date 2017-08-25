@@ -71,9 +71,9 @@ class SugarCRMConfiguration extends FormBase{
     $config->save(TRUE);
 
     try {
-      // Initialize client service and try to login in the CRM.
-      $client = \Drupal::service('webform_sugarcrm.sugarcrm_client');
-      $client->login();
+      // Initialize Sugar CRM manager and try to login in the CRM.
+      $manager = \Drupal::service('webform_sugarcrm.sugarcrm_manager');
+      $manager->login();
 
       drupal_set_message(t('A connection to the SugarCRM instance could be established.'));
     }
