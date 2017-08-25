@@ -1,0 +1,5 @@
+webform_sugarcrm.edit_configuration:
+  title: 'SugarCRM Mapping'
+  route_name: webform_sugarcrm.fields_mapping
+  parent_id: entity.webform.edit_form
+  weight: 100

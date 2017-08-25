@@ -1,0 +1,4 @@
+'administer sugarcrm':
+  title: 'Administer SugarCRM'
+  description: 'Grants access to administer the connections settings, to the remote SugarCRM instance, in Drupal.'
+  restrict access: true

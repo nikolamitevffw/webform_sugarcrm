@@ -1,0 +1,167 @@
+<?php
+
+/**
+ * @file
+ * Webform SugarCRM Integration module.
+ */
+
+use Drupal\webform_sugarcrm\SugarCrmClient;
+
+/**
+ * Calls the SugarCRM service.
+ */
+function webform_sugarcrm_client_init() {
+
+  $user = &drupal_static(__FUNCTION__);
+  $config = \Drupal::configFactory()->getEditable('webform_sugarcrm.sugarcrm_configuration');
+
+  if (!$user) {
+    // We'll start by checking if we have the informations needed.
+    // If not, send the user a message on what is wrong an how to fix.
+    $url = $config->get('url');
+    $user = $config->get('user');
+    $password = $config->get('password');
+
+    if (empty($url)) {
+      \Drupal::logger('webform_sugarcrm')->error('SugarCRM Service URL not set. Go to !url.', array('!url' => l(t('Configure SugarCRM'), 'admin/config/system/sugarcrm')));
+      return FALSE;
+    }
+
+    if (empty($user)) {
+      \Drupal::logger('webform_sugarcrm')->error('SugarCRM Service user not set. Go to !url.', array('!url' => l(t('Configure SugarCRM'), 'admin/config/system/sugarcrm')));
+      return FALSE;
+    }
+
+    if (empty($password)) {
+      \Drupal::logger('webform_sugarcrm')->error('SugarCRM Service password not set. Go to !url.', array('!url' => l(t('Configure SugarCRM'), 'admin/config/system/sugarcrm')));
+      return FALSE;
+    }
+
+    // Prepare constructor parameters.
+    $params = array(
+      'url' => $url,
+      'user' => $user,
+      'password' => $password,
+    );
+
+    // Initialize the call.
+    try {
+      $user = new SugarCrmClient($params);
+    }
+    catch (\Exception $exc) {
+      \Drupal::logger('webform_sugarcrm')->error($exc->getMessage());
+    }
+  }
+
+  return $user;
+}
+
+/**
+ * Helper function for gathering SugerCRM modules.
+ *
+ * @return array
+ */
+function webform_sugarcrm_get_sugarcrm_modules() {
+  $sugarcrm_mudule_options = array('_none' => 'None');
+
+  // Call SugarCRM and get available modules.
+  $sugarcrm_client = webform_sugarcrm_client_init();
+  $sugarcrm_mudules = $sugarcrm_client->getModules();
+
+  // Build modules list.
+  foreach ($sugarcrm_mudules->modules as $module) {
+    $sugarcrm_mudule_options[$module->module_key] = $module->module_key;
+  }
+
+  return $sugarcrm_mudule_options;
+}
+
+/**
+ * Helper function for getting SugarCRM module fields.
+ * @param null $module
+ *
+ * @return array
+ */
+function webform_sugarcrm_get_sugarcrm_module_fields($module = NULL) {
+  $sugarcrm_mudule_field_options = array('_none' => 'None');
+
+  if (isset($module) && $module !== '_none') {
+    // Call SugarCRM and get module's fields.
+    $sugarcrm_client = webform_sugarcrm_client_init();
+    $sugarcrm_mudule_fields = $sugarcrm_client->getModuleFields($module);
+
+    // Build module fields list.
+    if (!empty($sugarcrm_mudule_fields)) {
+      foreach ($sugarcrm_mudule_fields->module_fields as $field) {
+        $sugarcrm_mudule_field_options[$field->name] = $field->required ? $field->name . ' *' : $field->name;
+      }
+    }
+  }
+
+  return $sugarcrm_mudule_field_options;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function webform_sugarcrm_form_alter(&$form, &$form_state, $form_id) {
+  // Add SugarCRM submit handler to the webform.
+  if (isset($form['#webform_id']) && $form_id === 'webform_submission_' . $form['#webform_id'] . '_form') {
+    // Add SugarCRM submit handler.
+    $form['actions']['submit']['#submit'][] = 'webform_sugarcrm_submit_handler';
+  }
+}
+
+/**
+ * Submit handler for webforms which need to make SugarCRM record.
+ *
+ * @return null|void
+ *  Function webform_sugarcrm_submit_handler.
+ */
+function webform_sugarcrm_submit_handler($form, &$form_state) {
+  if (isset($form['#webform_id']) && $form['form_id'] === 'webform_submission_' . $form['#webform_id'] . '_form') {
+    // Get fields mapping.
+    $configuration = Drupal::configFactory()->get('webform_sugarcrm.webform_field_mapping.' . $form['#webform_id']);
+    $fields_mapping = $configuration->getRawData();
+    if (empty($fields_mapping)){
+      // If there is no field mapping assume that no SugarCRM record should be done.
+      return;
+    }
+
+    $mapped_fields = webform_sugarcrm_field_mapping($form_state->getValues(), $fields_mapping);
+
+    foreach ($mapped_fields as $module => $fields) {
+      $client = webform_sugarcrm_client_init();
+      if (empty($client)) {
+        return NULL;
+      }
+
+      $record = $client->setSugarCrmRecord($module, $fields);
+    }
+  }
+}
+
+/**
+ * Helper function for mapping submitted field data to SugarCRM fields.
+ *
+ * @param $submitted
+ *  Submitted webform fields and values.
+ * @param $fields_mapping
+ *  Mapping array.
+ *
+ * @return array
+ *  Mapped array in format suitable for SugarCRM record.
+ */
+function webform_sugarcrm_field_mapping($submitted, $fields_mapping) {
+  $mapped_fields = array();
+  if (!empty($fields_mapping)) {
+    foreach ($fields_mapping as $key => $value) {
+      if ($value['sugar_field'] !== '_none') {
+        $mapped_fields[$value['sugar_module']][$value['sugar_field']]['value'] = $submitted[$key];
+        $mapped_fields[$value['sugar_module']][$value['sugar_field']]['name'] = $value['sugar_field'];
+      }
+    }
+  }
+
+  return $mapped_fields;
+}

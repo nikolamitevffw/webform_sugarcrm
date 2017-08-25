@@ -1,0 +1,17 @@
+webform_sugarcrm.sugarcrm_configuration:
+  type: config_object
+  label: 'SugarCRM configuration'
+  mapping:
+    url:
+      type: string
+      label: 'URL to SugarCRM Instance'
+    user:
+      type: string
+      label: 'User for SugarCRM Instance'
+    password:
+      type: string
+      label: 'Password for SugarCRM Instance'
+
+webform_sugarcrm.webform_field_mapping.*:
+  type: config_object
+  label: 'SugarCRM configuration'

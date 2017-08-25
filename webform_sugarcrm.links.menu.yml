@@ -1,0 +1,5 @@
+webform_sugarcrm.crm_configuration:
+  title: 'Configure SugarCRM'
+  description: 'Manage CRM configuration'
+  parent: system.admin_config_services
+  route_name: webform_sugarcrm.crm_configuration

@@ -1,0 +1,15 @@
+webform_sugarcrm.crm_configuration:
+  path: '/admin/config/services/sugarcrm'
+  defaults:
+    _title: 'SugarCRM configuration'
+    _form: '\Drupal\webform_sugarcrm\Form\SugarCRMConfiguration'
+  requirements:
+    _permission: 'administer sugarcrm'
+
+webform_sugarcrm.fields_mapping:
+  path: '/admin/structure/webform/manage/{webform}/sugarcrm-mapping'
+  defaults:
+    _title: 'Webform - SugarCRM fields mapping'
+    _form: '\Drupal\webform_sugarcrm\Form\WebformFieldsMapping'
+  requirements:
+    _permission: 'administer sugarcrm'
