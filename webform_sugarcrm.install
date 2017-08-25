@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Webform SugarCRM Integration module.
+ */
+
+/**
+ * Remove module configurations.
+ */
+function webform_sugarcrm_uninstall() {
+  $sugar_config = Drupal::configFactory()->getEditable('webform_sugarcrm.sugarcrm_configuration');
+  $sugar_config->delete();
+
+  $webforms = Drupal::entityTypeManager()->getStorage('webform')->loadMultiple();
+
+  foreach ($webforms as $webform) {
+    $webform_config = Drupal::configFactory()->getEditable('webform_sugarcrm.webform_field_mapping.' . $webform->id());
+    $webform_config->delete();
+  }
+}
