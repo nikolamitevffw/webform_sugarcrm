@@ -5,15 +5,15 @@ namespace Drupal\webform_sugarcrm\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Serialization\Yaml;
-use Drupal\webform_sugarcrm\SugarCrmManager;
+use Drupal\webform_sugarcrm\WebformSugarCrmManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class WebformFieldsMapping
+ * Class WebformSugarCrmFieldsMapping
  *
  * @package Drupal\webform_sugarcrm\Form
  */
-class WebformFieldsMapping extends FormBase{
+class WebformSugarCrmFieldsMapping extends FormBase{
 
   /**
    * Stores Sugar CRM manager.
@@ -22,7 +22,7 @@ class WebformFieldsMapping extends FormBase{
    */
   private $sugarCrm;
 
-  public function __construct(SugarCrmManager $sugarCrm) {
+  public function __construct(WebformSugarCrmManager $sugarCrm) {
     $this->sugarCrm = $sugarCrm;
   }
 
@@ -85,7 +85,7 @@ class WebformFieldsMapping extends FormBase{
           '#title' => t('Select SugarCRM module'),
           '#default_value' => $selected_module,
           '#ajax' => array(
-            'callback' => 'Drupal\webform_sugarcrm\Form\WebformFieldsMapping::formAjaxCallback',
+            'callback' => 'Drupal\webform_sugarcrm\Form\WebformSugarCrmFieldsMapping::formAjaxCallback',
             'wrapper' => 'form-ajax-wrapper',
             'method' => 'replace',
             'event' => 'change',

@@ -6,11 +6,11 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class SugarCRMConfiguration
+ * Class WebformSugarCRMConfiguration
  *
  * @package Drupal\webform_sugarcrm\Form
  */
-class SugarCRMConfiguration extends FormBase{
+class WebformSugarCRMConfiguration extends FormBase{
 
   /**
    * {@inheritdoc}

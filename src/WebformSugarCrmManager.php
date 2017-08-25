@@ -7,7 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 /**
  * Class SugarCrmManager
  */
-class SugarCrmManager {
+class WebformSugarCrmManager {
 
   /**
    * Stores Sugar CRM session.
