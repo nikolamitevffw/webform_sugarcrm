@@ -30,3 +30,7 @@ service API.
 ### Configuration
 * SugarCRM configuration: `/admin/config/services/sugarcrm`
 * Webform components mapping: `/node/{nid}/webform/sugarcrm-mapping`
+
+### Project Information
+* Drupal project: https://www.drupal.org/project/webform_helptext
+* Github project: https://github.com/nikolamitevffw/webform_helptext
