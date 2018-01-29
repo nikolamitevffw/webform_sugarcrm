@@ -75,7 +75,7 @@ class WebformSugarCrmFieldsMapping extends FormBase{
         // Create form elements for each Webform field.
         $form['webform_container'][$key] = array(
           '#type' => 'fieldset',
-          '#title' => $element['#title'],
+          '#title' => isset($element['#title']) ? $element['#title'] : $element['#type'],
           '#collapsible' => TRUE,
           '#collapsed' => FALSE,
         );
