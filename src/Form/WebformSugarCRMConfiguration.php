@@ -75,11 +75,12 @@ class WebformSugarCRMConfiguration extends FormBase{
       $manager = \Drupal::service('webform_sugarcrm.sugarcrm_manager');
       $manager->login();
 
-      drupal_set_message(t('A connection to the SugarCRM instance could be established.'));
+      \Drupal::messenger()->addMessage(t('A connection to the SugarCRM instance could be established.'));
     }
     catch (\Exception $e) {
       \Drupal::logger('webform_sugarcrm')->error($e->getMessage());
-      drupal_set_message($e->getMessage(), 'error');
+
+      \Drupal::messenger()->addMessage($e->getMessage(), 'error');
     }
   }
 
