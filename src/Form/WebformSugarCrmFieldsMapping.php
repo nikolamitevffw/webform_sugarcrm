@@ -106,7 +106,7 @@ class WebformSugarCrmFieldsMapping extends FormBase{
 
     }
     catch (\Exception $e) {
-      drupal_set_message($e->getMessage(), 'error');
+      \Drupal::messenger()->addMessage($e->getMessage(), 'error');
       return [];
     }
 
@@ -132,7 +132,7 @@ class WebformSugarCrmFieldsMapping extends FormBase{
     $config->setData($data);
     $config->save(TRUE);
 
-    drupal_set_message('Fields mapping have been saved.');
+    \Drupal::messenger()->addMessage(t('Fields mapping have been saved.'));
   }
 
   /**
