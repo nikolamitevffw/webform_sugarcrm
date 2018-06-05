@@ -147,7 +147,7 @@ class WebformSugarCrmManager {
         $response = json_decode($result[1]);
       }
       else {
-        drupal_set_message(t('An error has occurred whilst retrieving data from the system. Please try again later.'), 'error');
+        \Drupal::messenger()->addMessage(t('An error has occurred whilst retrieving data from the system. Please try again later.'), 'error');
         \Drupal::logger('bcms_sugarcrm')->error('An error occurred while communicating with SugarCRM. The error was: @error', array('@error' => $result[0] . "\r\n\r\n" . $result[1]));
         $sugar_comm_failure = TRUE;
       }
