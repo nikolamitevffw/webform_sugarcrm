@@ -10,9 +10,17 @@
  */
 function webform_sugarcrm_form_alter(&$form, &$form_state, $form_id) {
   // Add SugarCRM submit handler to the webform.
-  if (isset($form['#webform_id']) && $form_id === 'webform_submission_' . $form['#webform_id'] . '_form') {
-    // Add SugarCRM submit handler.
-    $form['actions']['submit']['#submit'][] = 'webform_sugarcrm_submit_handler';
+  if (isset($form['#webform_id'])) {
+    $form_ids = [
+      'webform_submission_' . $form['#webform_id'] . '_form',
+      'webform_submission_' . $form['#webform_id'] . '_add_form',
+      'webform_submission_' . $form['#webform_id'] . '_test_form',
+    ];
+
+    if (in_array($form_id, $form_ids)) {
+      // Add SugarCRM submit handler.
+      $form['actions']['submit']['#submit'][] = 'webform_sugarcrm_submit_handler';
+    }
   }
 }
 
@@ -23,29 +31,37 @@ function webform_sugarcrm_form_alter(&$form, &$form_state, $form_id) {
  *  Function webform_sugarcrm_submit_handler.
  */
 function webform_sugarcrm_submit_handler($form, &$form_state) {
-  if (isset($form['#webform_id']) && $form['#form_id'] === 'webform_submission_' . $form['#webform_id'] . '_form') {
-    // Get fields mapping.
-    $configuration = Drupal::configFactory()->get('webform_sugarcrm.webform_field_mapping.' . $form['#webform_id']);
-    $fields_mapping = $configuration->getRawData();
-    if (empty($fields_mapping)){
-      // If there is no field mapping assume that no SugarCRM record should be done.
-      return;
-    }
+  if (isset($form['#webform_id'])) {
+    $form_ids = [
+      'webform_submission_' . $form['#webform_id'] . '_form',
+      'webform_submission_' . $form['#webform_id'] . '_add_form',
+      'webform_submission_' . $form['#webform_id'] . '_test_form',
+    ];
 
-    $mapped_fields = webform_sugarcrm_field_mapping($form_state->getValues(), $fields_mapping);
-
-    $sugarcrm = Drupal::service('webform_sugarcrm.sugarcrm_manager');
-    if (!empty($sugarcrm)) {
-      try {
-        $sugarcrm->login();
-
-        foreach ($mapped_fields as $module => $fields) {
-          $sugarcrm->setSugarCrmRecord($module, $fields);
-        }
+    if (in_array($form['#form_id'], $form_ids)) {
+      // Get fields mapping.
+      $configuration = Drupal::configFactory()
+        ->get('webform_sugarcrm.webform_field_mapping.' . $form['#webform_id']);
+      $fields_mapping = $configuration->getRawData();
+      if (empty($fields_mapping)) {
+        // If there is no field mapping assume that no SugarCRM record should be done.
+        return;
       }
-      catch (\Exception $e) {
-        \Drupal::logger('webform_sugarcrm')->error($e->getMessage());
-        \Drupal::messenger()->addMessage($e->getMessage(), 'error');
+
+      $mapped_fields = webform_sugarcrm_field_mapping($form_state->getValues(), $fields_mapping);
+
+      $sugarcrm = Drupal::service('webform_sugarcrm.sugarcrm_manager');
+      if (!empty($sugarcrm)) {
+        try {
+          $sugarcrm->login();
+
+          foreach ($mapped_fields as $module => $fields) {
+            $sugarcrm->setSugarCrmRecord($module, $fields);
+          }
+        } catch (\Exception $e) {
+          \Drupal::logger('webform_sugarcrm')->error($e->getMessage());
+          \Drupal::messenger()->addMessage($e->getMessage(), 'error');
+        }
       }
     }
   }
